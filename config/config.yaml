@@ -1,7 +1,7 @@
 alg: enn
 lr: 1e-5
 edit_lr: 1e-2
-seed: 0
+seed: 42
 debug: False
 model_save_pt: 5000
 edit_bs: 1
@@ -17,7 +17,7 @@ cedit: 0.1
 cloc: 1.0
 cbase: 1.0
 val_steps: 500
-device: cuda
+device: cuda:1
 base_loss: distill
 oracle: False
 train: True

@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+from transformers import T5Tokenizer
 
 
 def kl_loc_loss(pre, post, mask=None):
@@ -57,8 +58,32 @@ def multiclass_log_probs(pred, targ, shift=True):
     pred_ids = pred.argmax(-1).masked_fill(~mask, NULL_TOKEN)
     correct = pred_ids == targ
     if pred.dim() == 3:
+        # print('~~~~~~~~pred_ids~~~~~~~~~~~')
+        # print(pred_ids)
+        # print('~~~~~~~~~targ~~~~~~~')
+        # print(targ)
+        # print("~~~~~`pred_ids == targ~~~~~~~")
+        # print(pred_ids == targ)
+        # print('~~~~~~~pred_ids.shape~~~~~~~~~')
+        # print(pred_ids.shape[1])
+        # print("~~~~~torch.sum(pred_ids == targ) >= (pred_ids.shape[1]-1)~~~~~~~")
+        # print(torch.sum(pred_ids == targ, 1) >= (pred_ids.shape[1]-1))
+        
+        # correct = torch.sum(pred_ids == targ, 1) >= (pred_ids.shape[1]-1)
         correct = (pred_ids == targ).all(-1)  # We want to get the whole sequence right
+        
+        # print('~~~~~~~correct~~~~~~~~')
+        # print(correct)
+        # tokenizer = T5Tokenizer.from_pretrained("/root/sparqling-queries/data/break/logical-forms-fixed/outputs/simplet5-epoch-7-train-loss-0.1483-val-loss-0.1631")
+        # print('~~~~~pred_ids_tosentence~~~~~~~~')
+        # print(tokenizer.batch_decode(pred_ids))
+        # print('~~~~~targ_tosentence~~~~~~~~')
+        # print(tokenizer.batch_decode(targ))
+
+
     acc = correct.float().mean()
+    # print('~~~~acc~~~~~~')
+    # print(acc)
 
     n_tokens = mask.float().sum()
     log_prob = (unmasked_log_probs * mask.float()).sum() / n_tokens

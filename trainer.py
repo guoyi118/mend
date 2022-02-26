@@ -214,7 +214,10 @@ class EditTrainer(BaseTrainer):
 
         # Do the edit
         start = time.time()
+        
+        #batch["cond"]并没有用到，因为mend不需要将correction的信息以这种形式输入进去
         edited_model, model_info = self.model.edit(batch["edit_inner"], batch["cond"])
+        # self.model.edit is in algs/mend.py
         edit_time = time.time() - start
 
         with torch.set_grad_enabled(training):

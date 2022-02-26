@@ -199,13 +199,27 @@ class MEND(EditableModel):
                 n: self.mend[n.replace(".", "#")](p.__x__, p.__delta__)
                 for n, p in _inner_params(self.model.named_parameters(), self.config.model.inner_params)
             }
+            # _inner_params(self.model.named_parameters(), self.config.model.inner_params)
+            # 这个函数会返回，我们想要一个list，里面有我们想要edit的layer 以及它的parameter，parameter是通过named_parameter获得的
+            # p.__x__, p.__delta__, 应该是named_parameters里每个parameter带的attributes，还没查到代表什么意思
+            # self.mend[n.replace(".", "#")](p.__x__, p.__delta__) 会调用GradientTransform forward来生成 两个新的x 和 delta
+            
+            # 结合上下的code，我推断编辑网络输出 参数调整量的方法为：
+            # 1. 输入embedding以后的 (问题, 调整后输出) line 181
+            # 2. loss.backward() line 189
+            # 3. 获得所有希望调整层的参数信息 + 计算 x 和 delta line 198
+            # 4. delta 和 x 相乘可以变成一个调整量 line 223
+            # 5. 上一步调整量 * learning rate = 最终调整量，然后加给模型 line 243
+            # 在整个过程中，我们需要的训练的部分为 step 3 里用于计算 x 和 delta line的 GradientTransform
 
+            
         # Should be bi,bj->ji for nn.Linear, but GPT2 uses Conv1d instead...
         if isinstance(self.model, transformers.GPT2LMHeadModel):
             targ = "ij"
         else:
             targ = "ji"
         mean_grads = {
+            # matrix multiplication x * delta
             n: torch.einsum(f"bi,bj->{targ}", x, delta)
             for n, (x, delta) in transformed_factors.items()
         }
@@ -223,6 +237,8 @@ class MEND(EditableModel):
 
         self.model.zero_grad()
 
+
+        # 编辑网络通过生成新的梯度，来更新模型参数 
         assert len(self.edit_lrs) == len(list(mean_grads.items()))
         updates = {n: lr * g for lr, (n, g) in zip(self.edit_lrs, mean_grads.items())}
 
