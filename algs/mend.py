@@ -228,7 +228,8 @@ class MEND(EditableModel):
 
         edited_model = self.model
         if not isinstance(edited_model, higher.patch._MonkeyPatchBase):
-            edited_model = make_functional(edited_model, in_place=True)
+            # edited_model = make_functional(edited_model, in_place=True)
+            edited_model = make_functional(edited_model)
 
         new_params = []
         for n, p in edited_model.named_parameters():

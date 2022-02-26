@@ -76,8 +76,8 @@ class BaseTrainer:
                 wandb_name += f" - {self.config.ref}"
             LOG.info(f"Writing wandb run \"{wandb_name}\" to {wandb_dir}")
             wandb.init(
-                project="efk",
-                entity="patchable-lm",
+                project="KE",
+                entity="guoyi118",
                 config=utils.flatten_dict(self.config),
                 name=wandb_name,
                 dir=wandb_dir,
@@ -237,7 +237,7 @@ class EditTrainer(BaseTrainer):
             post_edit_dict = self.model.edit_loss_fn(post_edit_logits, batch["edit_outer"]["labels"])
             post_loc_dict = self.model.loc_loss_fn(post_base_logits, batch["loc"]["labels"])
             pre_loc_dict = self.model.loc_loss_fn(base_logits, batch["loc"]["labels"])
-
+        
         info_dict = {}
         info_dict['loss/edit'] = l_edit.item()
         info_dict['loss/loc'] = l_loc.item()

@@ -15,7 +15,7 @@ class Seq2SeqAugmentedKILT(Dataset):
         tokenizer,
         data_path,
         config,
-        max_length=32,
+        max_length=128,
         return_view=False,
         all_views=False,
     ):
@@ -25,20 +25,21 @@ class Seq2SeqAugmentedKILT(Dataset):
         self.config = config
 
         def extract(d):
-            ex = {k: d[k] for k in ["input", "prediction", "alternatives", "filtered_rephrases", "output"]}
-            if ex["input"] in ex["filtered_rephrases"]:
-                ex["filtered_rephrases"].remove(ex["input"])
+            ex = {k: d[k] for k in ["input", "prediction", "alternatives"]}
+            # if ex["input"] in ex["filtered_rephrases"]:
+            #     ex["filtered_rephrases"].remove(ex["input"])
             return ex
 
         with jsonlines.open(data_path) as f:
             for d in f:
                 extracted = extract(d)
-                if len(extracted["alternatives"]) > 0 and len(extracted["filtered_rephrases"]) > 0:
-                    self.data.append(extracted)
+                # if len(extracted["alternatives"]) > 0 and len(extracted["filtered_rephrases"]) > 0:
+                self.data.append(extracted)
 
         self.max_length = max_length
         self.all_views = all_views
         self.return_view = return_view
+
         if self.config.data.zsre_nq and "train" not in data_path:
             self.use_nq = True
             LOG.info("** Using natural questions for zsre base samples **")
@@ -46,6 +47,7 @@ class Seq2SeqAugmentedKILT(Dataset):
             self.nq = NQDataset(self.config.data.nq_path + ("/train.json" if "train" in data_path else "/validation.json"),
                                 tokenizer, config)
         else:
+            # print('herere')
             self.use_nq = False
 
     def is_bart(self):
@@ -55,14 +57,14 @@ class Seq2SeqAugmentedKILT(Dataset):
         return len(self.data)
 
     def __getitem__(self, item, seed=None):
-        new_label = random.choice(self.data[item]["alternatives"])
-        rephrase = random.choice(self.data[item]["filtered_rephrases"])
+        new_label = self.data[item]["alternatives"]
+        # rephrase = random.choice(self.data[item]["filtered_rephrases"])
         output = {
             "src": self.data[item]["input"],
             "pred": self.data[item]["prediction"],
-            "rephrase": rephrase,
+            # "rephrase": rephrase,
             "alt": new_label,
-            "answers": [x["answer"] for x in self.data[item]["output"]],
+            # "answers": [x["answer"] for x in self.data[item]["output"]],
             "cond": "{} >> {} || {}".format(
                 self.data[item]["prediction"],
                 new_label,
@@ -76,7 +78,7 @@ class Seq2SeqAugmentedKILT(Dataset):
         src = [b["src"] for b in batch]
         ne = self.config.data.n_edits
         trg = (
-            [b["answers"][0] for b in batch[:-ne]] +
+            [b["pred"] for b in batch[:-ne]] +
             [b["alt"] for b in batch[-ne:]]
         )
 
@@ -86,7 +88,7 @@ class Seq2SeqAugmentedKILT(Dataset):
                 "src": src,
                 "trg": trg,
                 "cond": [b["cond"] for b in batch[-ne:]],
-                "rephrase": [b["rephrase"] for b in batch[-ne:]],
+                # "rephrase": [b["rephrase"] for b in batch[-ne:]],
             }.items()
             for k2, v2 in self.tok(
                 v1,
