@@ -55,9 +55,9 @@ def run(config):
     elif config.task == "qa" or config.task == "zsre":
         from data_classes.zsre import Seq2SeqAugmentedKILT
 
-        train_set = Seq2SeqAugmentedKILT(tokenizer, "/root/sparqling-queries/data/break/logical-forms-fixed/train_alter_v3.jsonl",
+        train_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/guoyi/mend/datamodels/train_alter_v3.jsonl",
                                          config)
-        val_set = Seq2SeqAugmentedKILT(tokenizer, "/root/sparqling-queries/data/break/logical-forms-fixed/dev_alter_v3.jsonl",
+        val_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/guoyi/mend/datamodels/dev_alter_v3.jsonl",
                                        config)
     else:
         raise ValueError(f"Unrecognized task {config.task}")

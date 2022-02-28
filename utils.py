@@ -27,8 +27,7 @@ def scr():
     if os.path.exists("/scr-ssd"):
         scr_dir = "/scr-ssd/" + getpass.getuser()
     else:
-        scr_dir = "/scr/" + getpass.getuser()
-
+        scr_dir = "/home/" + getpass.getuser()
     if not os.path.exists(scr_dir):
         os.makedirs(scr_dir)
 

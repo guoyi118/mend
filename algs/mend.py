@@ -177,9 +177,14 @@ class MEND(EditableModel):
     def outer_parameters(self):
         return list(self.mend.parameters()) + [self.edit_lrs]
 
-    def edit(self, batch, condition=None, detach_history=False):
-        outputs = _logits(self.model(**batch))
-        loss = self.edit_loss_fn(outputs, batch["labels"])["nll"]
+    def edit(self, batch, input_ids=None, masks=None, labels=None, condition=None, detach_history=False):
+        if input_ids is not None:
+            outputs = _logits(self.model(input_ids=input_ids, attention_mask=masks, labels=labels))
+            loss = self.edit_loss_fn(outputs, labels)["nll"]
+        else:
+            outputs = _logits(self.model(**batch))
+            loss = self.edit_loss_fn(outputs, batch["labels"])["nll"]
+        
 
         names = set([n for n, p in self.model.named_parameters()])
         pset = set(self.config.model.inner_params)

@@ -1,7 +1,7 @@
-name: /root/sparqling-queries/data/break/logical-forms-fixed/outputs/simplet5-epoch-7-train-loss-0.1483-val-loss-0.1631
+name: /home/sdq/GitHub/guoyi/mend/datamodels/simplet5-epoch-7-train-loss-0.1483-val-loss-0.1631
 class_name: T5ForConditionalGeneration
 tokenizer_class: T5Tokenizer
-tokenizer_name: /root/sparqling-queries/data/break/logical-forms-fixed/outputs/simplet5-epoch-7-train-loss-0.1483-val-loss-0.1631
+tokenizer_name: /home/sdq/GitHub/guoyi/mend/datamodels/simplet5-epoch-7-train-loss-0.1483-val-loss-0.1631
 inner_params:
 - "encoder.block.9.layer.1.DenseReluDense.wi.weight"
 - "encoder.block.9.layer.1.DenseReluDense.wo.weight"

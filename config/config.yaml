@@ -10,14 +10,14 @@ max_iters: 1000000
 log_interval: 100
 val_interval: 5000
 lr_lr: 1e-3
-batch_size: 64
+batch_size: 32
 val_batch_size: 5
 accumulate_bs: 10
 cedit: 0.1
 cloc: 1.0
 cbase: 1.0
 val_steps: 500
-device: cuda:1
+device: cuda
 base_loss: distill
 oracle: False
 train: True
