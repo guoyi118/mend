@@ -3,14 +3,14 @@ lr: 1e-5
 edit_lr: 1e-2
 seed: 42
 debug: False
-model_save_pt: 5000
+model_save_pt: 3000
 edit_bs: 1
 silent: False
 max_iters: 1000000
 log_interval: 100
-val_interval: 5000
+val_interval: 3000
 lr_lr: 1e-3
-batch_size: 32
+batch_size: 8
 val_batch_size: 5
 accumulate_bs: 10
 cedit: 0.1
@@ -36,6 +36,8 @@ no_grad_layers: null
 eval_only: False
 half: False
 save: False
+use_gate_network: True
+gate_ckpt_path: /home/sdq/GitHub/text-to-viz/models/switch_network/outputs/Gated_epoch=13-val_loss=0.22066.ckpt
 
 model:
   pt: null

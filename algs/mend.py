@@ -177,7 +177,8 @@ class MEND(EditableModel):
     def outer_parameters(self):
         return list(self.mend.parameters()) + [self.edit_lrs]
 
-    def edit(self, batch, input_ids=None, masks=None, labels=None, condition=None, detach_history=False):
+    
+    def edit(self, batch, condition=None, input_ids=None, masks=None, labels=None, detach_history=False):
         if input_ids is not None:
             outputs = _logits(self.model(input_ids=input_ids, attention_mask=masks, labels=labels))
             loss = self.edit_loss_fn(outputs, labels)["nll"]
@@ -214,7 +215,7 @@ class MEND(EditableModel):
             # 2. loss.backward() line 189
             # 3. 获得所有希望调整层的参数信息 + 计算 x 和 delta line 198
             # 4. delta 和 x 相乘可以变成一个调整量 line 223
-            # 5. 上一步调整量 * learning rate = 最终调整量，然后加给模型 line 243
+            # 5. 上一步调整量 * learning rate = 最终调整量，然后加给模型 line 259
             # 在整个过程中，我们需要的训练的部分为 step 3 里用于计算 x 和 delta line的 GradientTransform
 
             

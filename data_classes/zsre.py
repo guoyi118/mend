@@ -15,7 +15,7 @@ class Seq2SeqAugmentedKILT(Dataset):
         tokenizer,
         data_path,
         config,
-        max_length=128,
+        max_length=256,
         return_view=False,
         all_views=False,
     ):

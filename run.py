@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 import numpy as np
 import torch
 import utils
-
+from gate_T5 import SeqGenSQL
 
 from trainer import EditTrainer
 import models
@@ -38,8 +38,13 @@ def run(config):
     np.random.seed(config.seed)
     torch.manual_seed(config.seed)
 
-    model = models.get_model(config)
-    tokenizer = models.get_tokenizer(config)
+    if config.use_gate_network:
+        gate_model = SeqGenSQL.load_from_checkpoint(config.gate_ckpt_path)
+        model = gate_model.model
+        tokenizer = gate_model.tokenizer
+    else:
+        model = models.get_model(config)
+        tokenizer = models.get_tokenizer(config)
 
     if config.task == "gen" or config.task == "wiki":
         add_padding(tokenizer, model)
@@ -55,9 +60,9 @@ def run(config):
     elif config.task == "qa" or config.task == "zsre":
         from data_classes.zsre import Seq2SeqAugmentedKILT
 
-        train_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/guoyi/mend/datamodels/train_alter_v3.jsonl",
+        train_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/text-to-viz/models/switch_network/train_alter_v9.jsonl",
                                          config)
-        val_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/guoyi/mend/datamodels/dev_alter_v3.jsonl",
+        val_set = Seq2SeqAugmentedKILT(tokenizer, "/home/sdq/GitHub/text-to-viz/models/switch_network/dev_alter_v9.jsonl",
                                        config)
     else:
         raise ValueError(f"Unrecognized task {config.task}")
